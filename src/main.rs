@@ -1,11 +1,9 @@
 use poloto::build;
-use rustfft::num_complex::ParseComplexError;
 use rustfft::{num_complex::Complex, FftPlanner};
 
 use std::f64::consts::PI;
 use std::fmt::Display;
 use std::fs;
-use std::ops::Index;
 
 fn plot_vector<T>(vector: &Vec<T>, timeline: &Vec<f64>, name: &str, x: &str, y: &str) -> String
 where
@@ -60,16 +58,18 @@ where
         .collect();
     fft.process(&mut buffer);
 
-    buffer
+    let mut result: Vec<f64> = buffer
         .iter()
         .take(signal.len() / 2)
         .map(|c| c.norm())
-        .collect()
+        .collect();
+    result[0] = 0.0;
+    result
 }
 
 fn main() {
     let disc_freq = 500;
-    let duration = 16.0;
+    let duration = 2.0;
     let freqs = [1.0, 2.0, 4.0, 8.0];
     for &freq in freqs.iter() {
         let suffix = format!("{}", freq as u8);
@@ -82,7 +82,6 @@ fn main() {
         let harmonic_name = &format!("harmonic-freq{}", suffix)[..];
         let meander_name = &format!("meander-freq{}", suffix)[..];
 
-        let duration = duration / freq;
         let timeline = create_timeline(disc_freq, duration);
 
         let length = timeline.len();

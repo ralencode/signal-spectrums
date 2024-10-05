@@ -69,6 +69,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-spectrums"
+version = "0.1.0"
+dependencies = [
+ "poloto",
+ "rustfft",
+]
+
+[[package]]
 name = "strength_reduce"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -79,14 +87,6 @@ name = "tagu"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eddb6b06d20fba9ed21fca3d696ee1b6e870bca0bcf9fa2971f6ae2436de576a"
-
-[[package]]
-name = "tipis-one"
-version = "0.1.0"
-dependencies = [
- "poloto",
- "rustfft",
-]
 
 [[package]]
 name = "transpose"
