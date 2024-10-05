@@ -1,9 +1,11 @@
 use poloto::build;
+use rustfft::num_complex::ParseComplexError;
 use rustfft::{num_complex::Complex, FftPlanner};
 
 use std::f64::consts::PI;
 use std::fmt::Display;
 use std::fs;
+use std::ops::Index;
 
 fn plot_vector<T>(vector: &Vec<T>, timeline: &Vec<f64>, name: &str, x: &str, y: &str) -> String
 where
@@ -84,9 +86,22 @@ fn main() {
         let timeline = create_timeline(disc_freq, duration);
 
         let length = timeline.len();
-        let amplitudes = (0..length / 2)
+        let amplitudes: Vec<_> = (0..length / 2)
             .map(|i| i as f64 * disc_freq as f64 / length as f64)
             .collect();
+
+        let amplitudes_harmonic_end_index = amplitudes
+            .iter()
+            .enumerate()
+            .find(|&r| *r.1 >= 15 as f64)
+            .unwrap()
+            .0;
+        let amplitudes_meander_end_index = amplitudes
+            .iter()
+            .enumerate()
+            .find(|&r| *r.1 >= 120 as f64)
+            .unwrap()
+            .0;
 
         let sine_graph = harmonic(freq, &timeline);
         let square_graph = harmonic_to_meander(&sine_graph);
@@ -121,7 +136,10 @@ fn main() {
             format!("{}{}-spectrum{}", dirname, harmonic_name, ext),
             plot_vector(
                 &sine_spectrum,
-                &amplitudes,
+                &(amplitudes[0..amplitudes_harmonic_end_index]
+                    .iter()
+                    .map(|&i| i as f64)
+                    .collect()),
                 "spectrum of harmonic signal",
                 "frequency",
                 "amplitude",
@@ -132,7 +150,10 @@ fn main() {
             format!("{}{}-spectrum{}", dirname, meander_name, ext),
             plot_vector(
                 &square_spectrum,
-                &amplitudes,
+                &(amplitudes[0..amplitudes_meander_end_index]
+                    .iter()
+                    .map(|&i| i as f64)
+                    .collect()),
                 "spectrum of meander signal",
                 "frequency",
                 "amplitude",
